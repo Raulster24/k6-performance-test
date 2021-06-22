@@ -1,10 +1,17 @@
 import http from 'k6/http';
-import { sleep } from 'k6';
+import { check, sleep } from 'k6';
+
 export let options = {
-  vus: 10,
-  duration: '30s',
+  vus: 10, //number of virtual users
+  duration: '30s', //duration of the load
 };
+
 export default function () {
-  http.get('https://reqres.in/api/users?page=2');
+  const res = http.get('https://reqres.in/api/users?page=2');
+
+  check(res, {
+    "status is 200": (r) => r.status === 200,
+    "is page number correct": (r) => r.json("page") === 2,
+});
   sleep(1);
 }
